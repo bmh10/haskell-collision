@@ -22,7 +22,8 @@ background = black
 
 data LifeGame = Game
   { 
-    particles :: [Particle],
+    p1 :: Particle,
+    p2 :: Particle,
     paused :: Bool,
     gen :: StdGen
   } deriving Show 
@@ -44,9 +45,9 @@ render g = pictures [renderParticles g,
                      renderDashboard g]
 
 renderDashboard :: LifeGame -> Picture
-renderDashboard g = G2.color white $ translate (-300) (-fromIntegral height/2 + 5) $ scale 0.1 0.1 $ text $ "Particles: " ++ show (length (particles g))
+renderDashboard g = G2.color white $ translate (-300) (-fromIntegral height/2 + 5) $ scale 0.1 0.1 $ text "Dashboard"
 
-renderParticles g = pictures $  map renderParticle (particles g)
+renderParticles g = pictures $ [renderParticle (p1 g), renderParticle (p2 g)]
 
 renderParticle :: Particle -> Picture
 renderParticle p
@@ -68,13 +69,13 @@ update secs game
  | (paused game) = game
  | otherwise     = updateGame game
 
-updateGame g = g { particles = updateParticles (particles g) }
+updateGame g = g { p1 = p1', p2 = p2' }
+  where (p1', p2') = updateParticles (p1 g) (p2 g)
 
-updateParticles [] = []
-updateParticles (p:ps) = updateParticle p ++ updateParticles ps
+updateParticles p1 p2 = (updateParticle p1, updateParticle p2)
   where updateParticle p
-          | inRange p = [p { pos = add (pos p) (vel p) }]
-          | otherwise = []
+          | inRange p = p { pos = add (pos p) (vel p) }
+          | otherwise = p
 
 inRange p = -w <= x && x <= w && -h <= y && y <= h
   where (x, y) = pos p
@@ -86,9 +87,9 @@ add (a,b) (c,d) = (a+c,b+d)
 
 initGame = do 
   stdGen <- newStdGen
-  let initialParticles = [particle (-100, 0) ( 5, 0) 1 10 blue,
-                          particle ( 100, 0) (-5, 0) 1 10 red]
-  let initialState = Game { paused = False, particles = initialParticles, gen = stdGen }
+  let particle1 = particle (-100, 0) ( 5, 0) 1 10 blue
+  let particle2 = particle ( 100, 0) (-5, 0) 1 10 red
+  let initialState = Game { paused = False, p1 = particle1, p2 = particle2, gen = stdGen }
   return initialState
 
 main = do
