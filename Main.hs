@@ -72,10 +72,20 @@ update secs game
 updateGame g = g { p1 = p1', p2 = p2' }
   where (p1', p2') = updateParticles (p1 g) (p2 g)
 
-updateParticles p1 p2 = (updateParticle p1, updateParticle p2)
-  where updateParticle p
-          | inRange p = p { pos = add (pos p) (vel p) }
-          | otherwise = p
+updateParticles p1 p2
+  | isCollision p1 p2 = (updateColor p1, updateColor p2) 
+  | otherwise         = (updateParticle p1, updateParticle p2)
+  where
+    updateColor p = p { col = white }
+    updateParticle p
+      | inRange p = p { pos = add (pos p) (vel p) }
+      | otherwise = p
+
+isCollision p1 p2 = d < (radius p2)
+  where
+    d = sqrt $ fromIntegral ((px-cx)*(px-cx) + (py-cy)*(py-cy))
+    (px, py) = pos p1
+    (cx, cy) = pos p2
 
 inRange p = -w <= x && x <= w && -h <= y && y <= h
   where (x, y) = pos p
