@@ -75,7 +75,7 @@ updateGame g = g { p1 = p1', p2 = p2' }
 updateParticles p1 p2 = (updateParticle p1 p2, updateParticle p2 p1)
   where
     updateParticle p1 p2
-      | isCollision p1 p2 = p1 { vel = ((m1*u1 + m2*u2) / (m1+m2), 0) }
+      | isCollision p1 p2 = p1 { vel = (-u1, 0) } -- (- quot (abs m1*u1 + abs m2*u2) (m1+m2), 0) }
       | inRange p1 = p1 { pos = add (pos p1) (vel p1) }
       | otherwise = p1
         where (u1, _) = vel p1
@@ -86,8 +86,8 @@ updateParticles p1 p2 = (updateParticle p1 p2, updateParticle p2 p1)
 isCollision p1 p2 = d < (radius p2)
   where
     d = sqrt $ fromIntegral ((px-cx)*(px-cx) + (py-cy)*(py-cy))
-    (px, py) = pos p1
-    (cx, cy) = pos p2
+    (px, py) = add (pos p1) (vel p1)
+    (cx, cy) = add (pos p2) (vel p2)
 
 inRange p = -w <= x && x <= w && -h <= y && y <= h
   where (x, y) = pos p
@@ -99,8 +99,8 @@ add (a,b) (c,d) = (a+c,b+d)
 
 initGame = do 
   stdGen <- newStdGen
-  let particle1 = particle (-100, 0) ( 5, 0) 1 10 blue
-  let particle2 = particle ( 100, 0) (-5, 0) 1 10 red
+  let particle1 = particle (-100, 0) ( 5, 0) 10 10 blue
+  let particle2 = particle ( 100, 0) (-5, 0) 10 10 red
   let initialState = Game { paused = False, p1 = particle1, p2 = particle2, gen = stdGen }
   return initialState
 
