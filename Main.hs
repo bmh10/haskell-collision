@@ -83,7 +83,7 @@ updateParticles p1 p2 = (updateParticle p1 p2, updateParticle p2 p1)
               m1 = mass p1
               m2 = mass p2
 
-isCollision p1 p2 = d < (radius p2)
+isCollision p1 p2 = d <= (radius p2)
   where
     d = sqrt $ fromIntegral ((px-cx)*(px-cx) + (py-cy)*(py-cy))
     (px, py) = add (pos p1) (vel p1)
