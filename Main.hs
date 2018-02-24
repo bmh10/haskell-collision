@@ -100,7 +100,7 @@ add (a,b) (c,d) = (a+c,b+d)
 reset g = g { paused = False, p1 = particle1, p2 = particle2 }
 
 particle1 = particle (-100, 0) ( 5, 0) 10 10 blue
-particle2 = particle ( 100, 0) (-5, 0) 10 10 red
+particle2 = particle ( 100, 0) (-5, 0) 20 10 red
 
 initGame = do 
   stdGen <- newStdGen
