@@ -76,7 +76,7 @@ updateGame g = g { p1 = p1', p2 = p2' }
 updateParticles p1 p2 = (updateParticle p1 p2, updateParticle p2 p1)
   where
     updateParticle p1 p2
-      | isCollision p1 p2 = p1 { vel = (-u1, 0) } -- (- quot (abs m1*u1 + abs m2*u2) (m1+m2), 0) }
+      | isCollision p1 p2 = p1 { vel = (quot ((u1*(m1-m2)) + 2*m2*u2) (m1+m2), 0) }
       | inRange p1 = p1 { pos = add (pos p1) (vel p1) }
       | otherwise = p1
         where (u1, _) = vel p1
