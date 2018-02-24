@@ -60,6 +60,7 @@ renderParticle p
 -- Event handling
 handleKeys :: Event -> LifeGame -> LifeGame
 handleKeys (EventKey (Char 'p') Down _ _) g = togglePaused g
+handleKeys (EventKey (Char 'r') Down _ _) g = reset g
 handleKeys _ game = game
 
 togglePaused g = g { paused   = not (paused g) }
@@ -96,11 +97,13 @@ inRange p = -w <= x && x <= w && -h <= y && y <= h
 
 add (a,b) (c,d) = (a+c,b+d)
 
+reset g = g { paused = False, p1 = particle1, p2 = particle2 }
+
+particle1 = particle (-100, 0) ( 5, 0) 10 10 blue
+particle2 = particle ( 100, 0) (-5, 0) 10 10 red
 
 initGame = do 
   stdGen <- newStdGen
-  let particle1 = particle (-100, 0) ( 5, 0) 10 10 blue
-  let particle2 = particle ( 100, 0) (-5, 0) 10 10 red
   let initialState = Game { paused = False, p1 = particle1, p2 = particle2, gen = stdGen }
   return initialState
 
