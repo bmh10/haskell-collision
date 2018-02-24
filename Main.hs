@@ -105,14 +105,20 @@ inRange p = -w <= x && x <= w && -h <= y && y <= h
 
 add (a,b) (c,d) = (a+c,b+d)
 
-reset g = g { paused = False, particles = [ParticlePair { p1 = particle1, p2 = particle2 }]}
+reset g = g { paused = False, particles = particlePairs}
 
 particle1 = particle (-100, 0) ( 5, 0) 10 10 blue
-particle2 = particle ( 100, 0) (-5, 0) 20 10 red
+particle2 = particle ( 100, 0) (-5, 0) 20 15 red
+
+particle3 = particle (-100, 50) ( 10, 0) 10 10 blue
+particle4 = particle ( 100, 50) (-10, 0) 10 10 red
+
+particlePairs = [ParticlePair { p1 = particle1, p2 = particle2 },
+                 ParticlePair { p1 = particle3, p2 = particle4 }]
 
 initGame = do 
   stdGen <- newStdGen
-  let initialState = Game { paused = False, particles = [ParticlePair { p1 = particle1, p2 = particle2 }], gen = stdGen }
+  let initialState = Game { paused = False, particles = particlePairs, gen = stdGen }
   return initialState
 
 main = do
