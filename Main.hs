@@ -22,7 +22,7 @@ background = black
 
 data Game = Game
   { 
-    particles :: ParticlePair,
+    particles :: [ParticlePair],
     paused :: Bool,
     gen :: StdGen
   } deriving Show 
@@ -52,7 +52,7 @@ render g = pictures [renderParticles g,
 renderDashboard :: Game -> Picture
 renderDashboard g = G2.color white $ translate (-300) (-fromIntegral height/2 + 5) $ scale 0.1 0.1 $ text "Dashboard"
 
-renderParticles g = renderParticlePair (particles g)
+renderParticles g = pictures $ map renderParticlePair (particles g)
 
 renderParticlePair :: ParticlePair -> Picture
 renderParticlePair pp = pictures $ [renderParticle (p1 pp), renderParticle (p2 pp)]
@@ -78,7 +78,7 @@ update secs game
  | (paused game) = game
  | otherwise     = updateGame game
 
-updateGame g = g { particles = updateParticlePair (particles g) }
+updateGame g = g { particles = map updateParticlePair (particles g) }
 
 updateParticlePair pp = pp { p1 = updateParticle (p1 pp) (p2 pp),
                              p2 = updateParticle (p2 pp) (p1 pp) }
@@ -105,14 +105,14 @@ inRange p = -w <= x && x <= w && -h <= y && y <= h
 
 add (a,b) (c,d) = (a+c,b+d)
 
-reset g = g { paused = False, particles = ParticlePair { p1 = particle1, p2 = particle2 }}
+reset g = g { paused = False, particles = [ParticlePair { p1 = particle1, p2 = particle2 }]}
 
 particle1 = particle (-100, 0) ( 5, 0) 10 10 blue
 particle2 = particle ( 100, 0) (-5, 0) 20 10 red
 
 initGame = do 
   stdGen <- newStdGen
-  let initialState = Game { paused = False, particles = ParticlePair { p1 = particle1, p2 = particle2 }, gen = stdGen }
+  let initialState = Game { paused = False, particles = [ParticlePair { p1 = particle1, p2 = particle2 }], gen = stdGen }
   return initialState
 
 main = do
