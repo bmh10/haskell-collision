@@ -113,8 +113,12 @@ particle2 = particle ( 100, 0) (-5, 0) 20 15 red
 particle3 = particle (-100, 50) ( 10, 0) 10 10 blue
 particle4 = particle ( 100, 50) (-10, 0) 10 10 red
 
+particle5 = particle (-100, 100) (10, 0) 10 10 blue
+particle6 = particle ( 100, 100) (0, 0)  20 15 red
+
 particlePairs = [ParticlePair { p1 = particle1, p2 = particle2 },
-                 ParticlePair { p1 = particle3, p2 = particle4 }]
+                 ParticlePair { p1 = particle3, p2 = particle4 },
+                 ParticlePair { p1 = particle5, p2 = particle6 }]
 
 initGame = do 
   stdGen <- newStdGen
