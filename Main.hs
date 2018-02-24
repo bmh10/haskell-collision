@@ -22,11 +22,16 @@ background = black
 
 data LifeGame = Game
   { 
-    p1 :: Particle,
-    p2 :: Particle,
+    particles :: ParticlePair,
     paused :: Bool,
     gen :: StdGen
   } deriving Show 
+
+data ParticlePair = ParticlePair
+  {
+    p1 :: Particle,
+    p2 :: Particle
+  } deriving Show
 
 data Particle = Particle
   {
@@ -47,7 +52,10 @@ render g = pictures [renderParticles g,
 renderDashboard :: LifeGame -> Picture
 renderDashboard g = G2.color white $ translate (-300) (-fromIntegral height/2 + 5) $ scale 0.1 0.1 $ text "Dashboard"
 
-renderParticles g = pictures $ [renderParticle (p1 g), renderParticle (p2 g)]
+renderParticles g = renderParticlePair (particles g)
+
+renderParticlePair :: ParticlePair -> Picture
+renderParticlePair pp = pictures $ [renderParticle (p1 pp), renderParticle (p2 pp)]
 
 renderParticle :: Particle -> Picture
 renderParticle p
@@ -70,10 +78,10 @@ update secs game
  | (paused game) = game
  | otherwise     = updateGame game
 
-updateGame g = g { p1 = p1', p2 = p2' }
-  where (p1', p2') = updateParticles (p1 g) (p2 g)
+updateGame g = g { particles = updateParticlePair (particles g) }
 
-updateParticles p1 p2 = (updateParticle p1 p2, updateParticle p2 p1)
+updateParticlePair pp = pp { p1 = updateParticle (p1 pp) (p2 pp),
+                             p2 = updateParticle (p2 pp) (p1 pp) }
   where
     updateParticle p1 p2
       | isCollision p1 p2 = p1 { vel = (quot ((u1*(m1-m2)) + 2*m2*u2) (m1+m2), 0) }
@@ -97,14 +105,14 @@ inRange p = -w <= x && x <= w && -h <= y && y <= h
 
 add (a,b) (c,d) = (a+c,b+d)
 
-reset g = g { paused = False, p1 = particle1, p2 = particle2 }
+reset g = g { paused = False, particles = ParticlePair { p1 = particle1, p2 = particle2 }}
 
 particle1 = particle (-100, 0) ( 5, 0) 10 10 blue
 particle2 = particle ( 100, 0) (-5, 0) 20 10 red
 
 initGame = do 
   stdGen <- newStdGen
-  let initialState = Game { paused = False, p1 = particle1, p2 = particle2, gen = stdGen }
+  let initialState = Game { paused = False, particles = ParticlePair { p1 = particle1, p2 = particle2 }, gen = stdGen }
   return initialState
 
 main = do
