@@ -20,7 +20,7 @@ offset = 100
 window = InWindow "Collision" (width, height) (offset, offset)
 background = black
 
-data LifeGame = Game
+data Game = Game
   { 
     particles :: ParticlePair,
     paused :: Bool,
@@ -45,11 +45,11 @@ data Particle = Particle
 particle pos vel mass radius col = Particle { pos = pos, vel = vel, mass = mass, radius = radius, col = col }
 
 -- Rendering
-render :: LifeGame -> Picture 
+render :: Game -> Picture 
 render g = pictures [renderParticles g, 
                      renderDashboard g]
 
-renderDashboard :: LifeGame -> Picture
+renderDashboard :: Game -> Picture
 renderDashboard g = G2.color white $ translate (-300) (-fromIntegral height/2 + 5) $ scale 0.1 0.1 $ text "Dashboard"
 
 renderParticles g = renderParticlePair (particles g)
@@ -66,14 +66,14 @@ renderParticle p
    
 
 -- Event handling
-handleKeys :: Event -> LifeGame -> LifeGame
+handleKeys :: Event -> Game -> Game
 handleKeys (EventKey (Char 'p') Down _ _) g = togglePaused g
 handleKeys (EventKey (Char 'r') Down _ _) g = reset g
 handleKeys _ game = game
 
 togglePaused g = g { paused   = not (paused g) }
 
-update :: Float -> LifeGame -> LifeGame
+update :: Float -> Game -> Game
 update secs game
  | (paused game) = game
  | otherwise     = updateGame game
