@@ -16,7 +16,7 @@ width = 800 :: Float
 height = 500 + dashboardHeight :: Float -- 31 * 15
 dashboardHeight = 20 :: Float
 offset = 100
-cr = 1 -- Coefficient of restitution
+cr = 0.5 -- Coefficient of restitution
 
 window = InWindow "Collision" (round width, round height) (offset, offset)
 background = black
@@ -51,7 +51,7 @@ render g = pictures [renderParticles g,
                      renderDashboard g]
 
 renderDashboard :: Game -> Picture
-renderDashboard g = G2.color white $ translate (-300) (-height/2 + 5) $ scale 0.1 0.1 $ text "Dashboard"
+renderDashboard g = G2.color white $ translate (-300) (-height/2 + 5) $ scale 0.1 0.1 $ text $ "Coefficient of restitution: " ++ show cr
 
 renderParticles g = pictures $ map renderParticlePair (particles g)
 
