@@ -12,13 +12,13 @@ import Data.List
 import Data.Maybe
 
 fps = 20
-width = 800
-height = 500 + dashboardHeight -- 31 * 15
-dashboardHeight = 20
+width = 800 :: Float
+height = 500 + dashboardHeight :: Float -- 31 * 15
+dashboardHeight = 20 :: Float
 offset = 100
 cr = 1 -- Coefficient of restitution
 
-window = InWindow "Collision" (width, height) (offset, offset)
+window = InWindow "Collision" (round width, round height) (offset, offset)
 background = black
 
 data Game = Game
@@ -36,9 +36,9 @@ data ParticlePair = ParticlePair
 
 data Particle = Particle
   {
-    pos :: (Int, Int),
-    vel :: (Int, Int),
-    mass :: Int,
+    pos :: (Float, Float),
+    vel :: (Float, Float),
+    mass :: Float,
     radius :: Float,
     col :: G2.Color
   } deriving Show
@@ -51,7 +51,7 @@ render g = pictures [renderParticles g,
                      renderDashboard g]
 
 renderDashboard :: Game -> Picture
-renderDashboard g = G2.color white $ translate (-300) (-fromIntegral height/2 + 5) $ scale 0.1 0.1 $ text "Dashboard"
+renderDashboard g = G2.color white $ translate (-300) (-height/2 + 5) $ scale 0.1 0.1 $ text "Dashboard"
 
 renderParticles g = pictures $ map renderParticlePair (particles g)
 
@@ -60,10 +60,9 @@ renderParticlePair pp = pictures $ [renderParticle (p1 pp), renderParticle (p2 p
 
 renderParticle :: Particle -> Picture
 renderParticle p
- = translate x' y' $ G2.color (col p) $ circleSolid (radius p)
+ = translate x y $ G2.color (col p) $ circleSolid (radius p)
   where
     (x, y) = pos p
-    (x', y') = (fromIntegral x, fromIntegral y)
    
 
 -- Event handling
@@ -94,19 +93,19 @@ updateParticlePair pp = pp { p1 = updateParticle (p1 pp) (p2 pp),
               m2 = mass p2
 
 calcVelocity u1 u2 m1 m2 cr = 
-  quot (cr*m2*(u2-u1) + m1*u1 + m2*u2) (m1+m2)
+  (cr*m2*(u2-u1) + m1*u1 + m2*u2) / (m1+m2)
   --quot ((u1*(m1-m2)) + 2*m2*u2) (m1+m2)
 
 isCollision p1 p2 = d <= (radius p2)
   where
-    d = sqrt $ fromIntegral ((px-cx)*(px-cx) + (py-cy)*(py-cy))
+    d = sqrt $ (px-cx)*(px-cx) + (py-cy)*(py-cy)
     (px, py) = add (pos p1) (vel p1)
     (cx, cy) = add (pos p2) (vel p2)
 
 inRange p = -w <= x && x <= w && -h <= y && y <= h
   where (x, y) = pos p
-        w = quot width 2
-        h = quot height 2
+        w = width / 2
+        h = height / 2
 
 add (a,b) (c,d) = (a+c,b+d)
 
