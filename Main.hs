@@ -84,13 +84,16 @@ updateParticlePair pp = pp { p1 = updateParticle (p1 pp) (p2 pp),
                              p2 = updateParticle (p2 pp) (p1 pp) }
   where
     updateParticle p1 p2
-      | isCollision p1 p2 = p1 { vel = (quot ((u1*(m1-m2)) + 2*m2*u2) (m1+m2), 0) }
+      | isCollision p1 p2 = p1 { vel = (calcVelocity u1 u2 m1 m2, 0) }
       | inRange p1 = p1 { pos = add (pos p1) (vel p1) }
       | otherwise = p1
         where (u1, _) = vel p1
               (u2, _) = vel p2
               m1 = mass p1
               m2 = mass p2
+
+calcVelocity u1 u2 m1 m2 = 
+  quot ((u1*(m1-m2)) + 2*m2*u2) (m1+m2)
 
 isCollision p1 p2 = d <= (radius p2)
   where
