@@ -16,7 +16,6 @@ width = 800 :: Float
 height = 500 + dashboardHeight :: Float -- 31 * 15
 dashboardHeight = 20 :: Float
 offset = 100
-cr = 0.5 -- Coefficient of restitution
 
 window = InWindow "Collision" (round width, round height) (offset, offset)
 background = black
@@ -25,7 +24,8 @@ data Game = Game
   { 
     particles :: [ParticlePair],
     paused :: Bool,
-    gen :: StdGen
+    gen :: StdGen,
+    cr :: Float -- Coefficient of resitution
   } deriving Show 
 
 data ParticlePair = ParticlePair
@@ -51,7 +51,7 @@ render g = pictures [renderParticles g,
                      renderDashboard g]
 
 renderDashboard :: Game -> Picture
-renderDashboard g = G2.color white $ translate (-300) (-height/2 + 5) $ scale 0.1 0.1 $ text $ "Coefficient of restitution: " ++ show cr
+renderDashboard g = G2.color white $ translate (-300) (-height/2 + 5) $ scale 0.1 0.1 $ text $ "Coefficient of restitution: " ++ show (cr g)
 
 renderParticles g = pictures $ map renderParticlePair (particles g)
 
@@ -78,12 +78,12 @@ update secs game
  | (paused game) = game
  | otherwise     = updateGame game
 
-updateGame g = g { particles = map updateParticlePair (particles g) }
+updateGame g = g { particles = map (updateParticlePair (cr g)) (particles g) }
 
-updateParticlePair pp = pp { p1 = updateParticle (p1 pp) (p2 pp),
-                             p2 = updateParticle (p2 pp) (p1 pp) }
+updateParticlePair cr pp = pp { p1 = updateParticle (p1 pp) (p2 pp) cr,
+                             p2 = updateParticle (p2 pp) (p1 pp) cr }
   where
-    updateParticle p1 p2
+    updateParticle p1 p2 cr
       | isCollision p1 p2 = p1 { vel = (calcVelocity u1 u2 m1 m2 cr, 0) }
       | inRange p1 = p1 { pos = add (pos p1) (vel p1) }
       | otherwise = p1
@@ -126,7 +126,7 @@ particlePairs = [ParticlePair { p1 = particle1, p2 = particle2 },
 
 initGame = do 
   stdGen <- newStdGen
-  let initialState = Game { paused = False, particles = particlePairs, gen = stdGen }
+  let initialState = Game { paused = False, particles = particlePairs, gen = stdGen, cr = 0.5 }
   return initialState
 
 main = do
