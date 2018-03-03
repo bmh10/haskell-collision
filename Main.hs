@@ -69,6 +69,8 @@ renderParticle p
 handleKeys :: Event -> Game -> Game
 handleKeys (EventKey (Char 'p') Down _ _) g = togglePaused g
 handleKeys (EventKey (Char 'r') Down _ _) g = reset g
+handleKeys (EventKey (Char 'q') Down _ _) g = g  {cr = (cr g) + 0.1 }
+handleKeys (EventKey (Char 'a') Down _ _) g = g  {cr = (cr g) - 0.1 }
 handleKeys _ game = game
 
 togglePaused g = g { paused   = not (paused g) }
